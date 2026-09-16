@@ -1,0 +1,43 @@
+# ---------- Java / Maven ----------
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.jar
+*.war
+*.class
+backend/data/
+*.db
+*.mv.db
+*.trace.db
+
+# Build do React copiado para dentro do backend (gerado por `npm run build`)
+backend/src/main/resources/static/
+
+# ---------- Node / React ----------
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+npm-debug.log*
+yarn-error.log*
+
+# ---------- Configuracoes sensiveis ----------
+.env
+.env.*
+!.env.example
+application-local.yml
+application-local.properties
+*.pem
+*.key
+
+# ---------- IDEs e sistema ----------
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.DS_Store
+Thumbs.db

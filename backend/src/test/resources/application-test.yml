@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:sentinela-test;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+app:
+  jwt:
+    secret: chave-de-teste-com-mais-de-32-caracteres-1234567890
+  demo-user:
+    enabled: false
+  mail:
+    # Testes nunca devem chamar o provedor externo, mesmo se existir um .env local.
+    api-key: ""
+
+logging:
+  level:
+    org.springframework: WARN

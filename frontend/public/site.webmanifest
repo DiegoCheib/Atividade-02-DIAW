@@ -1,0 +1,13 @@
+{
+  "name": "Sentinela | PUC Minas",
+  "short_name": "Sentinela",
+  "description": "Autenticacao com Spring Boot, JWT e React - Atividade 02 de DIAW.",
+  "icons": [
+    { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#005380",
+  "background_color": "#04121b",
+  "display": "standalone",
+  "start_url": "/login"
+}

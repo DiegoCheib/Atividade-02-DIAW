@@ -1,0 +1,32 @@
+# Perfil de producao: PostgreSQL, cookie seguro e sem contas de demonstracao.
+# Ative com --spring.profiles.active=prod
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  h2:
+    console:
+      enabled: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    cookie-secure: true
+    cookie-same-site: Strict
+  security:
+    allowed-origins: ${CORS_ORIGINS}
+  demo-user:
+    enabled: false
+  mail:
+    api-key: ${RESEND_API_KEY}
+    from: ${MAIL_FROM}
+    app-base-url: ${APP_BASE_URL}
+
+logging:
+  level:
+    br.pucminas.diaw.sentinela: INFO

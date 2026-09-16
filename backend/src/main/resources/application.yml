@@ -1,0 +1,78 @@
+spring:
+  application:
+    name: sentinela
+
+  # Permite usar backend/.env iniciando pelo modulo ou pela raiz do projeto.
+  # Variaveis exportadas pelo ambiente continuam tendo precedencia.
+  config:
+    import: optional:file:.env[.properties],optional:file:backend/.env[.properties]
+
+  datasource:
+    # Banco em arquivo: os dados sobrevivem ao reinicio da aplicacao.
+    url: jdbc:h2:file:./data/sentinela;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: ${H2_CONSOLE:false}
+      path: /h2-console
+
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+  compression:
+    enabled: true
+
+app:
+  jwt:
+    # Em producao defina JWT_SECRET (>= 32 caracteres). Sem ele, uma chave
+    # aleatoria e gerada a cada start e as sessoes caem no reinicio.
+    secret: ${JWT_SECRET:}
+    issuer: sentinela-diaw
+    access-token-ttl: 15m
+    refresh-token-ttl: 7d
+    refresh-token-remember-ttl: 30d
+    cookie-name: sentinela_refresh
+    cookie-path: /api/auth
+    cookie-secure: ${COOKIE_SECURE:false}
+    cookie-same-site: Lax
+
+  security:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:4173}
+    login-max-attempts: 5
+    login-lock-duration: 15m
+
+  demo-user:
+    enabled: ${DEMO_USER:true}
+
+  mail:
+    # Envio transacional pelo Resend (https://resend.com). Sem RESEND_API_KEY o
+    # envio fica desligado e o link de redefinicao vai apenas para o log.
+    api-key: ${RESEND_API_KEY:}
+    from: "${MAIL_FROM:Sentinela <onboarding@resend.dev>}"
+    reply-to: ${MAIL_REPLY_TO:}
+    # Origem usada para montar o link do e-mail (em dev, o servidor do Vite).
+    app-base-url: ${APP_BASE_URL:http://localhost:5173}
+    reset-token-ttl: 30m
+    max-requests-per-hour: 5
+
+logging:
+  level:
+    br.pucminas.diaw.sentinela: INFO
+    org.springframework.security: WARN
