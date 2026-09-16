@@ -51,7 +51,7 @@ export function RecoverPasswordForm() {
         subtitle="Informe o e-mail cadastrado para solicitar a redefinicao."
       />
 
-      <FieldGroup className="stagger">
+      <FieldGroup>
         <FormAlert message={error} />
         <FormAlert message={success} variant="success" />
 

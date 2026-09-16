@@ -55,7 +55,7 @@ export function LoginForm() {
     <form onSubmit={handleSubmit} noValidate>
       <AuthHeader title="Bem-vindo de volta" subtitle="Entre com suas credenciais para continuar." />
 
-      <FieldGroup className="stagger">
+      <FieldGroup>
         <FormAlert message={notice} variant="success" />
         <FormAlert message={error} />
 
@@ -75,7 +75,15 @@ export function LoginForm() {
         </Field>
 
         <Field data-invalid={fieldErrors.password ? true : undefined}>
-          <FieldLabel htmlFor="password">Senha</FieldLabel>
+          <div className="flex items-center justify-between gap-3">
+            <FieldLabel htmlFor="password">Senha</FieldLabel>
+            <Link
+              to="/recoverpassword"
+              className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+            >
+              Esqueci minha senha
+            </Link>
+          </div>
           <PasswordInput
             id="password"
             name="password"
@@ -86,12 +94,6 @@ export function LoginForm() {
             required
           />
           <FieldError>{fieldErrors.password}</FieldError>
-          <Link
-            to="/recoverpassword"
-            className="w-fit self-end text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-          >
-            Esqueci minha senha
-          </Link>
         </Field>
 
         <Field orientation="horizontal">

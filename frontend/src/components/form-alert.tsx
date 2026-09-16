@@ -22,8 +22,8 @@ export function FormAlert({
       role={isError ? "alert" : "status"}
       className={
         isError
-          ? "animate-rise border-destructive/30 bg-destructive/10 text-destructive"
-          : "animate-rise border-emerald-500/30 bg-emerald-500/10 text-emerald-500"
+          ? "border-destructive/30 bg-destructive/10 text-destructive"
+          : "border-emerald-500/30 bg-emerald-500/10 text-emerald-500"
       }
     >
       <Icon className="size-4" aria-hidden />

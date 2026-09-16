@@ -103,9 +103,9 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <AuthHeader title="Criar conta" subtitle="Leva menos de um minuto para comecar." />
+      <AuthHeader title="Criar conta" subtitle="Preencha os dados abaixo para criar seu acesso." />
 
-      <FieldGroup className="stagger">
+      <FieldGroup>
         <FormAlert message={error} />
 
         <Field data-invalid={fieldErrors.name ? true : undefined}>

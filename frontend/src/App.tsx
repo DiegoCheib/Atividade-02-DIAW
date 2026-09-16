@@ -1,6 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 
-import { AuroraBackground } from "@/components/aurora-background"
 import { GuestRoute, ProtectedRoute } from "@/components/protected-route"
 import { AuthProvider } from "@/context/auth-context"
 import DashboardPage from "@/pages/dashboard-page"
@@ -14,7 +13,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AuroraBackground />
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
 

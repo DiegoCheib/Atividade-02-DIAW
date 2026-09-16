@@ -144,7 +144,7 @@ export function ResetPasswordForm() {
         subtitle={`Escolha uma nova senha para ${tokenState.email}.`}
       />
 
-      <FieldGroup className="stagger">
+      <FieldGroup>
         <FormAlert message={error} />
 
         <Field data-invalid={fieldErrors.password ? true : undefined}>
