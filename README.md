@@ -23,7 +23,7 @@ Atividade 02 · Desenvolvimento de Interfaces e Aplicações Web (DIAW) · PUC M
 
 O **Sentinela** é uma aplicação web completa de login e cadastro de usuários.
 
-O enunciado da atividade pedia Thymeleaf para as telas. Optamos por uma arquitetura desacoplada:
+O enunciado da atividade pedia Thymeleaf para as telas. Optei por uma arquitetura desacoplada:
 o backend expõe uma **API REST stateless autenticada por JWT** e o frontend é uma **SPA em React**
 que consome essa API. O resultado atende aos mesmos requisitos (telas de login, cadastro e
 recuperação de senha, autenticação, senhas com hash e rotas protegidas) com uma separação clara
@@ -381,11 +381,8 @@ backend. Falhas do provedor não revelam se a conta existe e não alteram a resp
 | Recuperação de senha por e-mail (opcional) | Atendido, com Resend e token de uso único |
 | Thymeleaf | Substituído por React, conforme combinado |
 
-## Autores
-
-Trabalho em dupla, desenvolvido com pair programming.
+## Autor
 
 - Diego Cheib
-- *(preencher com o nome da dupla)*
 
 PUC Minas · Desenvolvimento de Interfaces e Aplicações Web · 2026
