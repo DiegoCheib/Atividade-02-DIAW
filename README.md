@@ -111,29 +111,137 @@ Atividade-02-DIAW/
 
 ### Pré-requisitos
 
-- **JDK 17 ou superior** (`java -version`)
-- **Node.js 20 ou superior** (`node -v`)
-- Maven não é necessário: o projeto inclui o Maven Wrapper (`./mvnw`)
+| Requisito | Versão mínima | Como conferir |
+|---|---|---|
+| JDK | 17 | `java -version` |
+| Node.js | 20 | `node -v` |
+| Maven | não precisa instalar | o projeto traz o wrapper `./mvnw` |
 
-### Modo desenvolvimento (dois terminais)
+---
+
+### Passo 1 · Clonar o repositório
 
 ```bash
-# Terminal 1 — API em http://localhost:8080
+git clone https://github.com/DiegoCheib/Atividade-02-DIAW.git
+cd Atividade-02-DIAW
+```
+
+---
+
+### Passo 2 · Configurar o `backend/.env`
+
+> [!IMPORTANT]
+> É aqui que entra a **`RESEND_API_KEY`**. Sem ela a aplicação sobe e todo o resto funciona,
+> mas o e-mail de recuperação de senha **não é enviado**: o link aparece apenas no log do backend.
+
+```bash
+cd backend
+cp .env.example .env
+```
+
+Abra o arquivo `backend/.env` e preencha as duas variáveis abaixo.
+
+#### `RESEND_API_KEY` — obrigatória para o envio do e-mail
+
+O envio é feito pela API do [Resend](https://resend.com). Para obter a chave:
+
+1. Crie uma conta gratuita em **<https://resend.com>** e confirme o e-mail.
+2. Acesse **API Keys** no menu lateral e clique em **Create API Key**.
+3. Dê um nome qualquer (ex.: `sentinela-local`) e deixe a permissão em **Sending access**.
+4. Copie a chave gerada. Ela começa com `re_` e **só é exibida uma vez**.
+5. Cole no `.env`:
+
+```dotenv
+RESEND_API_KEY=re_sua_chave_aqui
+```
+
+> [!WARNING]
+> O remetente padrão `onboarding@resend.dev` é o endereço de testes do Resend e **só entrega
+> mensagens na caixa de entrada do dono da conta**. Para enviar a qualquer destinatário é preciso
+> verificar um domínio próprio no Resend e apontar `MAIL_FROM` para um endereço desse domínio.
+
+#### `JWT_SECRET` — recomendada
+
+Chave HMAC que assina os tokens. Precisa de no mínimo 32 caracteres. Sem ela, uma chave aleatória é
+sorteada a cada start e todas as sessões caem quando o backend reinicia.
+
+```bash
+openssl rand -base64 48
+```
+
+Cole o resultado no `.env`:
+
+```dotenv
+JWT_SECRET=cole_aqui_o_valor_gerado
+```
+
+O arquivo `.env` está coberto pelo `.gitignore` e nunca vai para o repositório.
+
+---
+
+### Passo 3 · Subir o backend
+
+No primeiro start o Maven baixa as dependências, o que leva alguns minutos.
+
+```bash
 cd backend
 ./mvnw spring-boot:run
+```
 
-# Terminal 2 — interface em http://localhost:5173
+A API fica em **<http://localhost:8080>**. Para conferir que subiu:
+
+```bash
+curl http://localhost:8080/api/health
+# {"application":"Sentinela","time":"...","status":"UP"}
+```
+
+---
+
+### Passo 4 · Subir o frontend
+
+Em **outro terminal**, com o backend rodando:
+
+```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Acesse **http://localhost:5173/login**.
+A interface fica em **<http://localhost:5173>**.
+
+---
+
+### Passo 5 · Acessar
+
+Abra **<http://localhost:5173/login>** e entre com uma das
+[contas de demonstração](#contas-de-demonstração), ou crie a sua em `/register`.
 
 O Vite encaminha as chamadas `/api` para a porta 8080, então não há problema de CORS durante o
 desenvolvimento e o cookie de sessão continua funcionando.
 
-### Modo produção (aplicação única)
+---
+
+### Testando a recuperação de senha
+
+1. Em `/login`, clique em **Esqueci minha senha**.
+2. Informe o e-mail de uma conta cadastrada e envie.
+3. **Com `RESEND_API_KEY` configurada:** o link chega por e-mail. Confira também o spam.
+4. **Sem a chave:** o link aparece no terminal do backend, em uma linha como
+
+```
+Conteudo em texto do e-mail nao enviado:
+...
+http://localhost:5173/resetpassword?token=AbC123...
+```
+
+Abra o link no navegador para escolher a nova senha. Ele vale por 30 minutos, só pode ser usado uma
+vez e, ao ser consumido, derruba todas as sessões abertas daquela conta.
+
+---
+
+### Modo produção (aplicação única, um só processo)
+
+Neste modo o Spring Boot serve o build do React e a API na mesma porta, dispensando o Vite.
 
 ```bash
 # 1. Gera o build do React dentro dos recursos estáticos do Spring
@@ -143,16 +251,20 @@ cd frontend && npm install && npm run build
 cd ../backend && ./mvnw spring-boot:run
 ```
 
-Acesse **http://localhost:8080/login**. O Spring Boot serve as páginas do React e a API no mesmo
-processo.
+Acesse **<http://localhost:8080/login>**.
 
-Para gerar o JAR executável com tudo dentro:
+Para gerar o JAR executável com tudo dentro, sem precisar rodar o `npm` à mão:
 
 ```bash
 cd backend
 ./mvnw -Pfullstack clean package     # compila o React e empacota junto
 java -jar target/sentinela-1.0.0.jar
 ```
+
+O perfil `fullstack` baixa o Node automaticamente, então não é preciso tê-lo instalado para esse
+comando.
+
+---
 
 ### Testes
 
@@ -163,6 +275,20 @@ cd backend
 
 São 28 testes: política de senha, emissão e validação de JWT e os fluxos completos de autenticação
 e redefinição de senha com MockMvc (token de uso único, troca de senha e revogação das sessões).
+Os testes não enviam e-mail e não dependem da `RESEND_API_KEY`.
+
+---
+
+### Se algo der errado
+
+| Sintoma | Causa provável | Solução |
+|---|---|---|
+| `Port 8080 is already in use` | outra aplicação ocupa a porta | `SERVER_PORT=8081 ./mvnw spring-boot:run` |
+| O e-mail não chega | chave ausente, ou remetente de teste | Confira `RESEND_API_KEY` no `.env`. Com `onboarding@resend.dev` só chega no e-mail dono da conta Resend |
+| Login cai a cada reinício do backend | `JWT_SECRET` vazia | Defina uma chave fixa no `.env` |
+| A tela carrega mas toda chamada falha | backend fora do ar | Confira o terminal do backend e o `curl` do passo 3 |
+| `404` ao abrir `/dashboard` direto na porta 8080 | build do React desatualizado | Rode `npm run build` no `frontend` de novo |
+| Quero inspecionar o banco | — | Suba com `H2_CONSOLE=true` e acesse `/h2-console` com a URL `jdbc:h2:file:./data/sentinela` |
 
 ## Contas de demonstração
 
@@ -302,18 +428,19 @@ Nenhum segredo está no código. Tudo vem de variáveis de ambiente, com valores
 desenvolvimento local. O arquivo `backend/.env.example` documenta as variáveis; copie para `.env`
 ou exporte no shell.
 
-| Variável | Padrão | Descrição |
-|---|---|---|
-| `JWT_SECRET` | *(gerada por execução)* | Chave HMAC de assinatura. **Mínimo de 32 caracteres.** Sem ela, uma chave aleatória é gerada no start e as sessões caem a cada reinício |
-| `CORS_ORIGINS` | `http://localhost:5173,http://localhost:4173` | Origens liberadas, separadas por vírgula |
-| `COOKIE_SECURE` | `false` | Use `true` em produção, para enviar o cookie só por HTTPS |
-| `DEMO_USER` | `true` | Criação das contas de demonstração |
-| `SERVER_PORT` | `8080` | Porta da aplicação |
-| `RESEND_API_KEY` | — | Chave `re_...` para enviar e-mails; sem ela, o link aparece apenas no log |
-| `MAIL_FROM` | `Sentinela <onboarding@resend.dev>` | Remetente cadastrado no Resend |
-| `MAIL_REPLY_TO` | — | Endereço opcional para respostas |
-| `APP_BASE_URL` | `http://localhost:5173` | Origem pública usada no link do e-mail |
-| `DATABASE_URL`, `DB_USERNAME`, `DB_PASSWORD` | — | Apenas no perfil `prod`, com PostgreSQL |
+| Variável | Necessária? | Padrão | Descrição |
+|---|---|---|---|
+| `RESEND_API_KEY` | **Sim, para o e-mail** | — | Chave `re_...` criada em <https://resend.com/api-keys>. Sem ela o envio fica desligado e o link de redefinição vai apenas para o log |
+| `JWT_SECRET` | Recomendada | *(sorteada a cada start)* | Chave HMAC de assinatura. **Mínimo de 32 caracteres.** Sem ela as sessões caem a cada reinício |
+| `MAIL_FROM` | Não | `Sentinela <onboarding@resend.dev>` | Remetente. O padrão só entrega no e-mail dono da conta Resend; para qualquer destinatário, use um domínio verificado |
+| `APP_BASE_URL` | Não | `http://localhost:5173` | Origem usada para montar o link do e-mail |
+| `MAIL_REPLY_TO` | Não | — | Endereço opcional para respostas |
+| `CORS_ORIGINS` | Não | `http://localhost:5173,http://localhost:4173` | Origens liberadas, separadas por vírgula |
+| `COOKIE_SECURE` | Não | `false` | Use `true` em produção, para enviar o cookie só por HTTPS |
+| `DEMO_USER` | Não | `true` | Criação das contas de demonstração |
+| `SERVER_PORT` | Não | `8080` | Porta da aplicação |
+| `H2_CONSOLE` | Não | `false` | Habilita o console do H2 em `/h2-console` |
+| `DATABASE_URL`, `DB_USERNAME`, `DB_PASSWORD` | Só no perfil `prod` | — | Conexão PostgreSQL |
 
 Gere uma chave adequada com:
 

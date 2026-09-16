@@ -61,6 +61,11 @@ public class ResendMailer {
         if (properties.hasReplyTo()) {
             payload.put("reply_to", properties.replyTo());
         }
+        if (!message.inlineImages().isEmpty()) {
+            payload.put("attachments", message.inlineImages().stream()
+                    .map(ResendMailer::attachment)
+                    .toList());
+        }
 
         try {
             ResendResponse response = restClient.post()
@@ -78,6 +83,18 @@ public class ResendMailer {
             log.error("Falha ao enviar e-mail pelo Resend: {}", e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Anexo inline no formato esperado pelo Resend. O {@code content_id} e o que
+     * liga o arquivo ao {@code <img src="cid:...">} do corpo da mensagem.
+     */
+    private static Map<String, Object> attachment(EmailMessage.InlineImage image) {
+        Map<String, Object> anexo = new LinkedHashMap<>();
+        anexo.put("filename", image.filename());
+        anexo.put("content", image.base64());
+        anexo.put("content_id", image.contentId());
+        return anexo;
     }
 
     /** Timeouts curtos: o pedido de recuperacao nao pode travar a requisicao HTTP. */
