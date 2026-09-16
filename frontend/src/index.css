@@ -174,3 +174,20 @@
         animation: none !important;
     }
 }
+
+/* Elevacao dos cartoes: sombra de contato curta somada a uma ambiente difusa,
+   no azul institucional em vez de cinza neutro. */
+@utility elevated {
+    box-shadow:
+        0 2px 4px rgb(0 51 79 / 0.08),
+        0 24px 56px -12px rgb(0 51 79 / 0.34);
+}
+
+@utility elevated-sm {
+    /* A primeira camada e a borda: como esta regra define box-shadow por
+       inteiro, ela substituiria o ring do cartao se nao a trouxesse junto. */
+    box-shadow:
+        0 0 0 1px rgb(0 51 79 / 0.09),
+        0 1px 2px rgb(0 51 79 / 0.05),
+        0 8px 20px -10px rgb(0 51 79 / 0.18);
+}

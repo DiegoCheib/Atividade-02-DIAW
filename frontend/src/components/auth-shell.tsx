@@ -10,7 +10,7 @@ import { BrandMark, BrandWordmark } from "@/components/brand-mark"
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
     <main className="flex min-h-svh items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-5xl overflow-hidden rounded-xl border border-border bg-card shadow-[0_2px_4px_rgb(0_51_79/0.08),0_24px_56px_-12px_rgb(0_51_79/0.34)]">
+      <div className="w-full max-w-5xl overflow-hidden rounded-xl border border-border bg-card elevated">
         <div className="grid lg:grid-cols-2">
           <section className="flex items-center px-6 py-10 sm:px-10 lg:px-12">
             <div className="mx-auto w-full max-w-sm">
